@@ -13,7 +13,7 @@ OPTIONS=-mcmodel=large
 else ifeq ($(ARCH), aarch32)
 CROSS_COMPILE?=arm-none-eabi-
 OPTIONS=-march=armv7-a
-else ifeq ($(ARCH), rv64)
+else ifeq ($(ARCH), riscv)
 CROSS_COMPILE?=riscv64-unknown-elf-
 OPTIONS=-mcmodel=medany
 else
