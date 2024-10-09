@@ -17,4 +17,10 @@ SECTIONS
         KEEP(*(.linux)) 
         __linux_end = .;
     }  
+    
+    .initramfs : ALIGN(0x200000) { 
+        __initramfs_start = ABSOLUTE(.);
+        KEEP(*(.initramfs)) 
+        __initramfs_end = .;
+    }  
 }
