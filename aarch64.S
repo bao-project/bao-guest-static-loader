@@ -35,3 +35,7 @@ _start:
 .section .dtb, "a"
     .incbin STRINGIFY(DTB)
  
+#ifdef INITRAMFS
+.section .initramfs, "a"
+    .incbin STRINGIFY(INITRAMFS)
+#endif 
