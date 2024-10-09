@@ -20,16 +20,31 @@ else
 $(error unkown architecture $(ARCH))
 endif
 
+MODIFIED_DTB=modified.dtb
+
+INITRD_OFFSETS +=
+
+ifeq ($(INITRAMFS),)
+TARGET_DTB=$(DTB)
+else
+TARGET_DTB=$(MODIFIED_DTB)
+endif
+
 all: $(TARGET).bin
 
 clean:
-	-rm *.elf *.bin
+	-rm *.elf *.bin $(MODIFIED_DTB)
 
 .PHONY: all clean
 	
 $(TARGET).bin: $(TARGET).elf
 	$(CROSS_COMPILE)objcopy -S -O binary $(TARGET).elf $(TARGET).bin
 
-$(TARGET).elf: $(ARCH).S $(IMAGE) $(DTB) loader_$(ARCH).ld
-	$(CROSS_COMPILE)gcc -Wl,-build-id=none -nostdlib -T loader_$(ARCH).ld\
-		-o $(TARGET).elf $(OPTIONS) $(ARCH).S -I. -D IMAGE=$(IMAGE) -D DTB=$(DTB)
+$(TARGET).elf: $(ARCH).S $(IMAGE) loader_$(ARCH).ld $(TARGET_DTB) $(if $(INITRAMFS), $(INITRAMFS))
+	$(CROSS_COMPILE)gcc -Wl,-build-id=none -nostdlib -T loader_$(ARCH).ld \
+		-o $(TARGET).elf $(OPTIONS) $(ARCH).S -I. -D IMAGE=$(IMAGE) -D DTB=$(TARGET_DTB) \
+		$(if $(INITRAMFS),-D INITRAMFS=$(INITRAMFS) $(INITRD_OFFSETS))
+
+$(MODIFIED_DTB):
+INITRD_OFFSETS += $(shell python3 dtb_initrd_modifier.py $(DTB) root=/dev/ram0 $(MODIFIED_DTB))
+
