@@ -21,6 +21,33 @@ _start:
     mov x2, xzr
     mov x3, xzr
     
+#ifdef INITRAMFS
+    /* linux,initrd-start */
+    adr x4, _start  //absolute address of this image .bin
+    ldr x5, =__dtb_start
+    add x5, x5, x4  //absolute adr of dtb
+
+    ldr x6, =INITRD_START_OFFSET
+    add x6, x5, x6 //absolute adr of linux,initrd-start property
+
+    ldr x7, =__initramfs_start
+    add x7, x7, x4 //absolute adr of initramfs
+    rev w7, w7  //change to big endian
+
+    str w7, [x6]
+
+    /* linux,initrd-end */
+    ldr x6, =INITRD_END_OFFSET
+    add x6, x5, x6 //absolute adr of linux,initrd-end property
+
+    ldr x7, =__initramfs_end
+    add x7, x7, x4 //absolute adr of initramfs end
+    rev w7, w7  //change to big endian
+
+    str w7, [x6]
+
+#endif //INITRAMFS
+
     /* jump to linux */
     ldr x4, =_start
     ldr x5, =__linux_start
@@ -38,4 +65,4 @@ _start:
 #ifdef INITRAMFS
 .section .initramfs, "a"
     .incbin STRINGIFY(INITRAMFS)
-#endif 
+#endif //INITRAMFS
