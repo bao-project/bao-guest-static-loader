@@ -91,7 +91,7 @@ def modify_dtb(dtb_file, bootargs_addition, output_file):
 
     dtb = fdt.parse_dtb(dtb_data)
 
-    #chosen = dtb.get_node("chosen")
+    chosen = dtb.get_node("chosen")
 
     if dtb.exist_node("chosen"):
         #print(chosen.name)
