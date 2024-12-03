@@ -94,7 +94,6 @@ def modify_dtb(dtb_file, bootargs_addition, output_file):
     chosen = dtb.get_node("chosen")
 
     if dtb.exist_node("chosen"):
-        #print(chosen.name)
         bootargs = chosen.get_property("bootargs")
 
         if bootargs is not None:
@@ -111,11 +110,6 @@ def modify_dtb(dtb_file, bootargs_addition, output_file):
         chosen.append(fdt.PropWords('linux,initrd-start', 0))
         chosen.append(fdt.PropWords('linux,initrd-end', 0))
         dtb.add_item(chosen)
-
-    node = dtb.get_node("chosen")
-    for prop in node.props:
-        print(prop.name)
-        print(prop.value)
 
     with open(output_file, "wb") as f:
       f.write(dtb.to_dtb(version=17))
